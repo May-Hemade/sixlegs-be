@@ -1,16 +1,28 @@
-import pg from "pg";
+import { Sequelize } from "sequelize"
 
-const { Pool } = pg;
+const { POSTGRES_URI } = process.env
 
-console.log(process.env.NODE_ENV);
-const db = new Pool({
-    ssl: {
-        rejectUnauthorized: false,
-    },
-    connectionString:
-        process.env.NODE_ENV !== "development"
-            ? process.env.DATABASE_URL
-            : process.env.DATABASE_URL_DEV,
-});
+if (!POSTGRES_URI) {
+  throw "Postgres URI not found"
+}
 
-export default db;
+const sequelize = new Sequelize(POSTGRES_URI, {
+  dialect: "postgres",
+})
+
+export const authenticateDatabase = async () => {
+  try {
+    await sequelize.authenticate({ logging: false })
+    /**
+     * alter:true -> if there is any change apply without dropping tables
+     * force:true -> apply changes and drop tables
+     */
+    await sequelize.sync({ alter: true, logging: false })
+    console.log("✅ Connection has been established successfully.")
+  } catch (error) {
+    console.log(error)
+    console.error("❌ Unable to connect to the database:", error)
+  }
+}
+
+export default sequelize
