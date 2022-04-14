@@ -12,12 +12,12 @@ const sequelize = new Sequelize(POSTGRES_URI, {
 
 export const authenticateDatabase = async () => {
   try {
-    await sequelize.authenticate({ logging: false })
+    await sequelize.authenticate({ logging: true })
     /**
      * alter:true -> if there is any change apply without dropping tables
      * force:true -> apply changes and drop tables
      */
-    await sequelize.sync({ alter: true, logging: false })
+    await sequelize.sync({ alter: true, logging: true })
     console.log("✅ Connection has been established successfully.")
   } catch (error) {
     console.log(error)

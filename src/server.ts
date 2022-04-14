@@ -1,10 +1,14 @@
 import express from "express"
-
 import cors from "cors"
-
 import usersRouter from "./services/user"
-
 import { authenticateDatabase } from "./database/connection"
+import {
+  badRequestHandler,
+  genericErrorHandler,
+  notFoundHandler,
+  unauthorizedHandler,
+} from "./errorHandlers"
+// import './sql/associations'
 
 const server = express()
 const port = process.env.PORT || 3001
@@ -14,6 +18,11 @@ server.use(express.json())
 server.use(cors())
 
 server.use("/user", usersRouter)
+
+server.use(badRequestHandler)
+server.use(unauthorizedHandler)
+server.use(notFoundHandler)
+server.use(genericErrorHandler)
 
 server.listen(port, async () => {
   authenticateDatabase()
