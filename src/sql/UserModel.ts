@@ -12,7 +12,7 @@ import { Listing } from "./ListingModel"
 import { Pet } from "./PetModel"
 
 import bcrypt from "bcrypt"
-import { UserRole } from "../models"
+import { UserRole } from "../types"
 
 export class User extends Model<
   InferAttributes<User>,

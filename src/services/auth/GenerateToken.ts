@@ -1,12 +1,12 @@
 import jwt from "jsonwebtoken"
-import { UserPayload, User } from "../../models"
+import { UserPayload, User } from "../../types"
 
 export const authenticateUser = async (user: User) => {
   const accessToken = await generateJWTToken({ id: user.id, role: user.role })
   return accessToken
 }
 
-const generateJWTToken = (user: { id: string; role: string }) =>
+const generateJWTToken = (user: { id: number; role: string }) =>
   new Promise<string>((resolve, reject) =>
     jwt.sign(
       user,

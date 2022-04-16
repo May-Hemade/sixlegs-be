@@ -8,6 +8,8 @@ import {
   notFoundHandler,
   unauthorizedHandler,
 } from "./errorHandlers"
+import petsRouter from "./services/pet"
+import listingsRouter from "./services/lisiting"
 // import './sql/associations'
 
 const server = express()
@@ -18,6 +20,8 @@ server.use(express.json())
 server.use(cors())
 
 server.use("/user", usersRouter)
+server.use("/pet", petsRouter)
+server.use("/listing", listingsRouter)
 
 server.use(badRequestHandler)
 server.use(unauthorizedHandler)

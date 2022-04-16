@@ -36,11 +36,11 @@ Listing.init(
       primaryKey: true,
     },
     longitude: {
-      type: DataTypes.NUMBER,
+      type: DataTypes.DOUBLE,
       allowNull: false,
     },
     latitude: {
-      type: DataTypes.NUMBER,
+      type: DataTypes.DOUBLE,
       allowNull: true,
     },
 
@@ -66,7 +66,7 @@ User.hasMany(Listing, {
   onDelete: "CASCADE",
   sourceKey: "id",
   foreignKey: "ownerId",
-  as: "listings", // this determines the name in `associations`!
+  as: "listings",
 })
 
 Listing.belongsTo(User, { targetKey: "id" })

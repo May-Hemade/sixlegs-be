@@ -4,7 +4,7 @@ export interface Error {
   errorsList: string
 }
 export interface User {
-  id: string
+  id: number
   firstName: string
   lastName: string
   gender?: string
@@ -16,12 +16,12 @@ export interface User {
 }
 
 export interface UserPayload {
-  id: string
+  id: number
   role: string
 }
 
 export interface Pet {
-  id: string
+  id: number
   petName: string
   lastName: string
   gender?: string
@@ -29,7 +29,7 @@ export interface Pet {
   avatar?: string
   dob: Date
   description?: string
-  ownerId: string
+  ownerId: number
 }
 
 export enum UserRole {
@@ -41,7 +41,7 @@ declare global {
   namespace Express {
     // override User in express
     interface User {
-      id: string
+      id: number
       token?: string
       role: string
     }

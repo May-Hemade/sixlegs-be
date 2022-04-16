@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express"
-import { Error } from "./models"
+import { Error } from "./types"
 
 export const badRequestHandler = (
   err: Error,
