@@ -1,6 +1,7 @@
 import multer from "multer"
 import { v2 as cloudinary } from "cloudinary"
 import { CloudinaryStorage } from "multer-storage-cloudinary"
+import { v4 as uniqId } from "uuid"
 
 process.env.TS_NODE_DEV && require("dotenv").config()
 
@@ -15,9 +16,9 @@ cloudinary.config({
 const cloudinaryStorage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
-    folder: "whatsUpClone",
+    folder: "six-legs",
     format: async (req: any, file: any) => "png",
-    public_id: (req: any, file: any) => "new",
+    public_id: (req: any, file: any) => uniqId(),
   } as { folder: string },
 })
 

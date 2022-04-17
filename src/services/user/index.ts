@@ -141,7 +141,6 @@ usersRouter
     parser.single("userAvatar"),
     async (req: Request, res: Response, next: NextFunction) => {
       try {
-        res.json(req.file)
         const loggedInUser = req.user
         if (loggedInUser) {
           const user = await User.findByPk(loggedInUser.id)
