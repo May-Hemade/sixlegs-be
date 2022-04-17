@@ -29,6 +29,28 @@ petsRouter
     }
   )
 
+  .post(
+    "/",
+    authMiddleware,
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const userId = req.user!.id
+        const pet = await Pet.create({
+          ...req.body,
+          ownerId: userId,
+        })
+
+        if (pet) {
+          res.send(pet)
+        } else {
+          next(createHttpError(500, "user was not created!"))
+        }
+      } catch (error) {
+        next(error)
+      }
+    }
+  )
+
   .get(
     "/:id",
     authMiddleware,
@@ -52,7 +74,6 @@ petsRouter
     parser.single("petAvatar"),
     async (req: Request, res: Response, next: NextFunction) => {
       try {
-        res.json(req.file)
         const loggedInUser = req.user
         if (loggedInUser) {
           const pet = await Pet.findByPk(req.params.id)

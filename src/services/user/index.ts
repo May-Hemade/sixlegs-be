@@ -71,8 +71,6 @@ usersRouter
         } else {
           next(createHttpError(500, "user was not created!"))
         }
-
-        res.send(user)
       } catch (error) {
         next(error)
       }

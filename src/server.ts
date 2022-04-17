@@ -10,7 +10,7 @@ import {
 } from "./errorHandlers"
 import petsRouter from "./services/pet"
 import listingsRouter from "./services/lisiting"
-// import './sql/associations'
+import "./sql/ModelAssociations"
 
 const server = express()
 const port = process.env.PORT || 3001

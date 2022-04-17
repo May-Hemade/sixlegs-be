@@ -5,7 +5,7 @@ User.hasMany(Pet, {
   onDelete: "CASCADE",
   sourceKey: "id",
   foreignKey: "ownerId",
-  as: "pets", // this determines the name in `associations`!
+  as: "pets",
 })
 
 Pet.belongsTo(User, { targetKey: "id" })
