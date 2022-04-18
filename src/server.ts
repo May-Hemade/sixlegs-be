@@ -13,6 +13,7 @@ import listingsRouter from "./services/lisiting"
 import "./sql/ModelAssociations"
 import listEndpoints from "express-list-endpoints"
 import reviewsRouter from "./services/review"
+import bookingsRouter from "./services/booking"
 
 const server = express()
 const port = process.env.PORT || 3001
@@ -25,6 +26,7 @@ server.use("/user", usersRouter)
 server.use("/pet", petsRouter)
 server.use("/listing", listingsRouter)
 server.use("/listing", reviewsRouter)
+server.use("/listing", bookingsRouter)
 
 server.use(badRequestHandler)
 server.use(unauthorizedHandler)

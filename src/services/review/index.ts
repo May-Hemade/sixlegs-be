@@ -1,11 +1,7 @@
 import { Request, Response, NextFunction } from "express"
 import { Router } from "express"
-
-import bcrypt from "bcrypt"
 import createHttpError from "http-errors"
 import { authMiddleware } from "../auth/AuthMiddleware"
-
-import { Listing } from "../../sql/ListingModel"
 import { Review } from "../../sql/ReviewModel"
 
 const reviewsRouter = Router()
@@ -77,7 +73,7 @@ reviewsRouter
         if (review) {
           res.send(review)
         } else {
-          next(createHttpError(500, "review was not created!"))
+          next(createHttpError(500, "Review was not created!"))
         }
       } catch (error) {
         next(error)
@@ -86,7 +82,7 @@ reviewsRouter
   )
 
   .delete(
-    "review/:reviewId",
+    "/review/:reviewId",
     authMiddleware,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
@@ -104,7 +100,7 @@ reviewsRouter
         })
         res.status(204).send()
       } catch (error) {
-        res.status(500).send({ message: "review coukd not be deleted!" })
+        res.status(500).send({ message: "Review could not be deleted!" })
       }
     }
   )

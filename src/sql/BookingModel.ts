@@ -21,9 +21,7 @@ export class Booking extends Model<
   declare listingId: ForeignKey<Listing["id"]>
   declare checkInDate: Date
   declare checkOutDate: Date
-
   declare owner?: NonAttribute<User>
-
   declare createdAt: CreationOptional<Date>
   declare updatedAt: CreationOptional<Date>
 }

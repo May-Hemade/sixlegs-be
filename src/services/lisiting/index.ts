@@ -1,17 +1,7 @@
 import { Request, Response, NextFunction } from "express"
 import { Router } from "express"
-import { checkCredentials, User } from "../../sql/UserModel"
-
-import bcrypt from "bcrypt"
 import createHttpError from "http-errors"
-import { authenticateUser } from "../auth/GenerateToken"
 import { authMiddleware } from "../auth/AuthMiddleware"
-import { adminMiddleware } from "../auth/AdminMiddleware"
-import sequelize from "../../database/connection"
-
-import { cloudinary, parser } from "../utils/cloudinary"
-import { Op } from "sequelize"
-
 import { Listing } from "../../sql/ListingModel"
 
 const listingsRouter = Router()
@@ -62,7 +52,7 @@ listingsRouter
         if (lisiting) {
           res.send(lisiting)
         } else {
-          next(createHttpError(500, "lisiting was not created!"))
+          next(createHttpError(500, "Lisiting was not created!"))
         }
       } catch (error) {
         next(error)
@@ -90,39 +80,10 @@ listingsRouter
               next(createHttpError(400, "Failed to upload"))
             }
           } else {
-            res.status(404).send({ message: "This is not your listing  " })
+            res.status(404).send({ message: "This is not your listing" })
           }
         } else {
           res.status(404).send({ message: "no such user" })
-        }
-      } catch (error) {
-        next(error)
-      }
-    }
-  )
-
-  .put(
-    "/:id",
-    authMiddleware,
-
-    async (req: Request, res: Response, next: NextFunction) => {
-      try {
-        const userId = req.user!.id
-        const listingId = req.params.id
-
-        const lisiting = await Listing.findByPk(listingId)
-        if (userId !== lisiting?.ownerId) {
-          res.status(404).send({ message: "This is not your listing" })
-          return
-        }
-        const [success, updatedListing] = await Listing.update(req.body, {
-          where: { id: listingId },
-          returning: true,
-        })
-        if (success) {
-          res.send(updatedListing)
-        } else {
-          res.status(404).send({ message: "Can't update!" })
         }
       } catch (error) {
         next(error)
