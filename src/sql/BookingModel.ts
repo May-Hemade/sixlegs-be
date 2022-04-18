@@ -51,21 +51,3 @@ Booking.init(
     sequelize,
   }
 )
-
-User.hasMany(Booking, {
-  onDelete: "CASCADE",
-  sourceKey: "id",
-  foreignKey: "ownerId",
-  as: "bookings", // this determines the name in `associations`!
-})
-
-Booking.belongsTo(User, { targetKey: "id" })
-
-Listing.hasMany(Booking, {
-  onDelete: "CASCADE",
-  sourceKey: "id",
-  foreignKey: "listingId",
-  as: "bookings", // this determines the name in `associations`!
-})
-
-Booking.belongsTo(Listing, { targetKey: "id" })

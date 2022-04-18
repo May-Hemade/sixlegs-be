@@ -11,6 +11,8 @@ import {
 import petsRouter from "./services/pet"
 import listingsRouter from "./services/lisiting"
 import "./sql/ModelAssociations"
+import listEndpoints from "express-list-endpoints"
+import reviewsRouter from "./services/review"
 
 const server = express()
 const port = process.env.PORT || 3001
@@ -22,6 +24,7 @@ server.use(cors())
 server.use("/user", usersRouter)
 server.use("/pet", petsRouter)
 server.use("/listing", listingsRouter)
+server.use("/listing", reviewsRouter)
 
 server.use(badRequestHandler)
 server.use(unauthorizedHandler)
@@ -30,6 +33,7 @@ server.use(genericErrorHandler)
 
 server.listen(port, async () => {
   authenticateDatabase()
+  console.table(listEndpoints(server))
   console.log(`✅ Server is running on port  ${port}`)
 })
 

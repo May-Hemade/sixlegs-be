@@ -47,43 +47,28 @@ listingsRouter
     }
   )
 
-  //   .post(
-  //     "/:id/avatar",
-  //     authMiddleware,
-  //     parser.single("petAvatar"),
-  //     async (req: Request, res: Response, next: NextFunction) => {
-  //       try {
-  //         res.json(req.file)
-  //         const loggedInUser = req.user
-  //         if (loggedInUser) {
-  //           const pet = await Pet.findByPk(req.params.id)
-  //           if (loggedInUser.id === pet?.ownerId) {
-  //             if (pet && req.file) {
-  //               pet.avatar = req.file.path
-  //               const updatedPet = await pet.save()
-  //               if (updatedPet) {
-  //                 res.send(updatedPet)
-  //               } else {
-  //                 next(
-  //                   createHttpError(400, "Could not save avatar try again later")
-  //                 )
-  //               }
-  //             } else {
-  //               next(
-  //                 createHttpError(400, "Could not save avatar try again later")
-  //               )
-  //             }
-  //           } else {
-  //             next(createHttpError(400, "This is not your pet  "))
-  //           }
-  //         } else {
-  //           next(createHttpError(404, "User not found"))
-  //         }
-  //       } catch (error) {
-  //         next(error)
-  //       }
-  //     }
-  //   )
+  .post(
+    "/",
+    authMiddleware,
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const userId = req.user!.id
+
+        const lisiting = await Listing.create({
+          ...req.body,
+          ownerId: userId,
+        })
+
+        if (lisiting) {
+          res.send(lisiting)
+        } else {
+          next(createHttpError(500, "lisiting was not created!"))
+        }
+      } catch (error) {
+        next(error)
+      }
+    }
+  )
 
   .put(
     "/:id",
@@ -116,25 +101,33 @@ listingsRouter
     }
   )
 
-//   .put(
-//     "/:id",
-//     authMiddleware,
-//     adminMiddleware,
-//     async (req: Request, res: Response, next: NextFunction) => {
-//       try {
-//         const [success, updatedUser] = await User.update(req.body, {
-//           where: { id: req.params.id },
-//           returning: true,
-//         })
-//         if (success) {
-//           res.send(updatedUser)
-//         } else {
-//           res.status(404).send({ message: "no such user" })
-//         }
-//       } catch (error) {
-//         next(error)
-//       }
-//     }
-//   )
+  .put(
+    "/:id",
+    authMiddleware,
+
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const userId = req.user!.id
+        const listingId = req.params.id
+
+        const lisiting = await Listing.findByPk(listingId)
+        if (userId !== lisiting?.ownerId) {
+          res.status(404).send({ message: "This is not your listing" })
+          return
+        }
+        const [success, updatedListing] = await Listing.update(req.body, {
+          where: { id: listingId },
+          returning: true,
+        })
+        if (success) {
+          res.send(updatedListing)
+        } else {
+          res.status(404).send({ message: "Can't update!" })
+        }
+      } catch (error) {
+        next(error)
+      }
+    }
+  )
 
 export default listingsRouter

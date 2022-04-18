@@ -61,12 +61,3 @@ Listing.init(
     sequelize,
   }
 )
-
-User.hasMany(Listing, {
-  onDelete: "CASCADE",
-  sourceKey: "id",
-  foreignKey: "ownerId",
-  as: "listings",
-})
-
-Listing.belongsTo(User, { targetKey: "id" })

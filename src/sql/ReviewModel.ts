@@ -39,7 +39,7 @@ Review.init(
       allowNull: false,
     },
     rating: {
-      type: DataTypes.NUMBER,
+      type: DataTypes.INTEGER,
       allowNull: true,
     },
 
@@ -51,21 +51,3 @@ Review.init(
     sequelize,
   }
 )
-
-User.hasMany(Review, {
-  onDelete: "CASCADE",
-  sourceKey: "id",
-  foreignKey: "ownerId",
-  as: "reviews", // this determines the name in `associations`!
-})
-
-Review.belongsTo(User, { targetKey: "id" })
-
-Listing.hasMany(Review, {
-  onDelete: "CASCADE",
-  sourceKey: "id",
-  foreignKey: "listingId",
-  as: "reviews", // this determines the name in `associations`!
-})
-
-Review.belongsTo(Listing, { targetKey: "id" })
