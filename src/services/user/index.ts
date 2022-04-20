@@ -9,8 +9,9 @@ import { authMiddleware } from "../auth/AuthMiddleware"
 import { adminMiddleware } from "../auth/AdminMiddleware"
 import sequelize from "../../database/connection"
 
-import { cloudinary, parser } from "../utils/cloudinary"
+import { parser } from "../utils/cloudinary"
 import { Op } from "sequelize"
+import passport from "passport"
 
 const usersRouter = Router()
 
@@ -110,6 +111,25 @@ usersRouter
         } else {
           next(createHttpError(400))
         }
+      } catch (error) {
+        next(error)
+      }
+    }
+  )
+
+  .get(
+    "/googleLogin",
+    passport.authenticate("google", { scope: ["email", "profile"] })
+  )
+
+  .get(
+    "/googleRedirect",
+    passport.authenticate("google"),
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        console.log("TOKENS: ", req.user?.token)
+
+        res.redirect(`${process.env.FE_URL}?accessToken=${req.user?.token}`)
       } catch (error) {
         next(error)
       }

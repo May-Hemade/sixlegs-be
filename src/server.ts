@@ -10,10 +10,11 @@ import {
 } from "./errorHandlers"
 import petsRouter from "./services/pet"
 import listingsRouter from "./services/lisiting"
-import "./sql/ModelAssociations"
 import listEndpoints from "express-list-endpoints"
 import reviewsRouter from "./services/review"
 import bookingsRouter from "./services/booking"
+import "./sql/ModelAssociations"
+import "./services/auth/oauth"
 
 const server = express()
 const port = process.env.PORT || 3001

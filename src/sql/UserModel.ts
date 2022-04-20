@@ -30,6 +30,7 @@ export class User extends Model<
   declare role: CreationOptional<string>
   declare password: string
   declare description: string | null
+  declare googleId: string | null
   declare createdAt: CreationOptional<Date>
   declare updatedAt: CreationOptional<Date>
 }
@@ -72,6 +73,10 @@ User.init(
       defaultValue: UserRole.User,
     },
     description: {
+      type: new DataTypes.TEXT(),
+      allowNull: true,
+    },
+    googleId: {
       type: new DataTypes.TEXT(),
       allowNull: true,
     },
