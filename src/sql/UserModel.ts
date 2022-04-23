@@ -85,6 +85,9 @@ User.init(
     updatedAt: DataTypes.DATE,
   },
   {
+    defaultScope: {
+      attributes: { exclude: ["password"] },
+    },
     tableName: "users",
     sequelize,
   }

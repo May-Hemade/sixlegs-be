@@ -34,7 +34,6 @@ usersRouter
     authMiddleware,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
-        const username = req.query.username
         const users = await User.findAll({
           where: sequelize.where(
             sequelize.fn(
