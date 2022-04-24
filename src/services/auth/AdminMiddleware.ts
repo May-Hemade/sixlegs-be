@@ -6,9 +6,9 @@ export const adminMiddleware: RequestHandler = (
   res: Response,
   next: NextFunction
 ) => {
-  if (req.user?.role === "host") {
+  if (req.user?.role === "admin") {
     next()
   } else {
-    next(createHttpError(403, "Only host is allowed!"))
+    next(createHttpError(403, "Only admin is allowed!"))
   }
 }

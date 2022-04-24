@@ -206,6 +206,48 @@ usersRouter
     }
   )
 
+  .post(
+    "/me/changePassword",
+    authMiddleware,
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const loggedInUser = req.user!
+
+        const { currentPassword, newPassword } = req.body
+        const user = await User.scope("withPassword").findByPk(loggedInUser.id)
+        if (!user) {
+          res.status(404).send({ message: "no such user" })
+          return
+        }
+
+        const passwordsMatch = await bcrypt.compare(
+          currentPassword,
+          user.password
+        )
+
+        if (!passwordsMatch) {
+          res.status(400).send({ message: "Passwords don't match" })
+          return
+        }
+        const newHashedPassword = await bcrypt.hash(newPassword, 10)
+
+        const [success] = await User.update(
+          { password: newHashedPassword },
+          {
+            where: { id: loggedInUser.id },
+          }
+        )
+        if (success) {
+          res.sendStatus(200)
+        } else {
+          res.status(500).send({ message: "Could not update password" })
+        }
+      } catch (error) {
+        next(error)
+      }
+    }
+  )
+
   .put(
     "/:id",
     authMiddleware,

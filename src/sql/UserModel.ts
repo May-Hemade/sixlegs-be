@@ -88,6 +88,11 @@ User.init(
     defaultScope: {
       attributes: { exclude: ["password"] },
     },
+    scopes: {
+      withPassword: {
+        attributes: { include: ["password"] },
+      },
+    },
     tableName: "users",
     sequelize,
   }
@@ -97,7 +102,9 @@ export const checkCredentials = async function (
   email: string,
   plainPw: string
 ): Promise<any> {
-  const user = await User.findOne({ where: { email: email } })
+  const user = await User.scope("withPassword").findOne({
+    where: { email: email },
+  })
 
   if (user) {
     const isMatch = await bcrypt.compare(plainPw, user.password)
