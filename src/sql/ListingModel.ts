@@ -20,8 +20,9 @@ export class Listing extends Model<
   declare longitude: number
   declare latitude: number
   declare address: string | null
-
   declare description: string | null
+  declare listingName: string
+  declare pricePerNight: number
   declare owner?: NonAttribute<User>
 
   declare createdAt: CreationOptional<Date>
@@ -52,6 +53,14 @@ Listing.init(
       type: DataTypes.TEXT(),
       allowNull: true,
     },
+    listingName: {
+      type: DataTypes.STRING(150),
+      allowNull: true,
+    },
+
+    pricePerNight:{
+      type: DataTypes.DOUBLE()
+    }
 
     createdAt: DataTypes.DATE,
     updatedAt: DataTypes.DATE,

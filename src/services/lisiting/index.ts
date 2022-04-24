@@ -19,24 +19,6 @@ listingsRouter
       }
     }
   )
-
-  .get(
-    "/:id",
-    authMiddleware,
-    async (req: Request, res: Response, next: NextFunction) => {
-      try {
-        const listing = await Listing.findByPk(req.params.id)
-        if (listing) {
-          res.send(listing)
-        } else {
-          res.status(404)
-        }
-      } catch (error) {
-        next(error)
-      }
-    }
-  )
-
   .post(
     "/",
     authMiddleware,
@@ -53,6 +35,43 @@ listingsRouter
           res.send(lisiting)
         } else {
           next(createHttpError(500, "Lisiting was not created!"))
+        }
+      } catch (error) {
+        next(error)
+      }
+    }
+  )
+
+  .get(
+    "/me",
+    authMiddleware,
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const loggedInUser = req.user!
+        const listings = await Listing.findAll({
+          where: {
+            ownerId: loggedInUser.id,
+          },
+        })
+        {
+          res.send(listings)
+        }
+      } catch (error) {
+        next(error)
+      }
+    }
+  )
+
+  .get(
+    "/:id",
+    authMiddleware,
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const listing = await Listing.findByPk(req.params.id)
+        if (listing) {
+          res.send(listing)
+        } else {
+          res.status(404)
         }
       } catch (error) {
         next(error)
