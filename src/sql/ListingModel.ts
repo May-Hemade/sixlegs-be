@@ -17,8 +17,8 @@ export class Listing extends Model<
 > {
   declare id: CreationOptional<number>
   declare ownerId: ForeignKey<User["id"]>
-  declare longitude: number
-  declare latitude: number
+  declare longitude: number | null
+  declare latitude: number | null
   declare address: string | null
   declare description: string | null
   declare listingName: string
@@ -38,7 +38,7 @@ Listing.init(
     },
     longitude: {
       type: DataTypes.DOUBLE,
-      allowNull: false,
+      allowNull: true,
     },
     latitude: {
       type: DataTypes.DOUBLE,
@@ -57,11 +57,9 @@ Listing.init(
       type: DataTypes.STRING(150),
       allowNull: true,
     },
-
-    pricePerNight:{
-      type: DataTypes.DOUBLE()
-    }
-
+    pricePerNight: {
+      type: DataTypes.DOUBLE(),
+    },
     createdAt: DataTypes.DATE,
     updatedAt: DataTypes.DATE,
   },
