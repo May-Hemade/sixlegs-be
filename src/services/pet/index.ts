@@ -42,6 +42,25 @@ petsRouter
       }
     }
   )
+  .get(
+    "/me",
+    authMiddleware,
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const loggedInUser = req.user!
+        const pets = await Pet.findAll({
+          where: {
+            ownerId: loggedInUser.id,
+          },
+        })
+        {
+          res.send(pets)
+        }
+      } catch (error) {
+        next(error)
+      }
+    }
+  )
 
   .get(
     "/:id",
