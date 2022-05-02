@@ -29,6 +29,7 @@ export interface Pet {
   avatar?: string
   dob: Date
   description?: string
+
   ownerId: number
 }
 

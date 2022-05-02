@@ -3,6 +3,8 @@ import { Router } from "express"
 import createHttpError from "http-errors"
 import { authMiddleware } from "../auth/AuthMiddleware"
 import { Listing } from "../../sql/ListingModel"
+import fetch from "node-fetch"
+import User from "../../sql/UserModel"
 
 const listingsRouter = Router()
 
@@ -12,7 +14,9 @@ listingsRouter
     authMiddleware,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
-        const listings = await Listing.findAll()
+        const listings = await Listing.findAll({
+          include: { model: User, as: "owner" },
+        })
         res.send(listings)
       } catch (error) {
         next(error)
@@ -61,6 +65,24 @@ listingsRouter
       }
     }
   )
+
+  // .get(
+  //   "/searchCity",
+  //   authMiddleware,
+  //   async (req: Request, res: Response, next: NextFunction) => {
+  //     try {
+  //       const searchCity = req.params.city
+  //       let response = await fetch(
+  //         `{https://geocode.maps.co/search?q=${searchCity}}`
+  //       )
+  //       const result = await response.json()
+
+  //       res.send(result)
+  //     } catch (error) {
+  //       next(error)
+  //     }
+  //   }
+  // )
 
   .get(
     "/:id",

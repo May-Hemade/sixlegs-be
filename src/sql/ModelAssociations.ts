@@ -20,7 +20,7 @@ User.hasMany(Listing, {
   as: "listings",
 })
 
-Listing.belongsTo(User, { targetKey: "id" })
+Listing.belongsTo(User, { targetKey: "id", as: "owner" })
 
 User.hasMany(Review, {
   onDelete: "CASCADE",
