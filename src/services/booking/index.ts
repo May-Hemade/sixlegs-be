@@ -4,6 +4,7 @@ import createHttpError from "http-errors"
 import { authMiddleware } from "../auth/AuthMiddleware"
 import { Listing } from "../../sql/ListingModel"
 import { Booking } from "../../sql/BookingModel"
+import User from "../../sql/UserModel"
 
 const bookingsRouter = Router()
 
@@ -42,7 +43,9 @@ bookingsRouter
         const bookings = await Booking.findAll({
           where: {
             listingId: listingId,
+            ownerId: req.user!.id,
           },
+          include: { model: User, as: "owner" },
         })
 
         res.send(bookings)
@@ -65,6 +68,7 @@ bookingsRouter
             id: bookingId,
             ownerId: loggedInUser.id,
           },
+          include: { model: User, as: "owner" },
         })
         if (booking) {
           res.status(200).send(booking)
@@ -85,7 +89,9 @@ bookingsRouter
         const loggedInUser = req.user!
         const bookingId = req.params.bookingId
 
-        const booking = await Booking.findByPk(bookingId)
+        const booking = await Booking.findByPk(bookingId, {
+          include: { model: User, as: "owner" },
+        })
         if (loggedInUser.id !== booking?.ownerId) {
           res.status(404).send({ message: "This is not your booking " })
           return
@@ -112,13 +118,16 @@ bookingsRouter
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         const userId = req.user!.id
-        const listingId = req.params.ListingId
+        const listingId = req.params.listingId
 
-        const booking = await Booking.create({
-          ...req.body,
-          ownerId: userId,
-          listingId: listingId,
-        })
+        const booking = await Booking.create(
+          {
+            ...req.body,
+            ownerId: userId,
+            listingId: listingId,
+          },
+          { include: { model: User, as: "owner" } }
+        )
 
         if (booking) {
           res.send(booking)

@@ -29,7 +29,7 @@ User.hasMany(Review, {
   as: "reviews",
 })
 
-Review.belongsTo(User, { targetKey: "id" })
+Review.belongsTo(User, { targetKey: "id", as: "owner" })
 
 Listing.hasMany(Review, {
   onDelete: "CASCADE",
@@ -47,7 +47,7 @@ User.hasMany(Booking, {
   as: "bookings",
 })
 
-Booking.belongsTo(User, { targetKey: "id" })
+Booking.belongsTo(User, { targetKey: "id", as: "owner" })
 
 Listing.hasMany(Booking, {
   onDelete: "CASCADE",

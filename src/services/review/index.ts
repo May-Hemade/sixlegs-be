@@ -3,6 +3,7 @@ import { Router } from "express"
 import createHttpError from "http-errors"
 import { authMiddleware } from "../auth/AuthMiddleware"
 import { Review } from "../../sql/ReviewModel"
+import User from "../../sql/UserModel"
 
 const reviewsRouter = Router()
 
@@ -12,12 +13,13 @@ reviewsRouter
     authMiddleware,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
-        const listingId = req.params.ListingId
+        const listingId = req.params.listingId
 
         const reviews = await Review.findAll({
           where: {
             listingId: listingId,
           },
+          include: { model: User, as: "owner" },
         })
 
         res.send(reviews)
@@ -62,13 +64,16 @@ reviewsRouter
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         const userId = req.user!.id
-        const listingId = req.params.ListingId
+        const listingId = req.params.listingId
 
-        const review = await Review.create({
-          ...req.body,
-          ownerId: userId,
-          listingId: listingId,
-        })
+        const review = await Review.create(
+          {
+            ...req.body,
+            ownerId: userId,
+            listingId: listingId,
+          },
+          { include: { model: User, as: "owner" } }
+        )
 
         if (review) {
           res.send(review)

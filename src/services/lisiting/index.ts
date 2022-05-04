@@ -5,6 +5,7 @@ import { authMiddleware } from "../auth/AuthMiddleware"
 import { Listing } from "../../sql/ListingModel"
 import fetch from "node-fetch"
 import User from "../../sql/UserModel"
+import sequelize from "sequelize"
 
 const listingsRouter = Router()
 
@@ -18,6 +19,23 @@ listingsRouter
           include: { model: User, as: "owner" },
         })
         res.send(listings)
+      } catch (error) {
+        next(error)
+      }
+    }
+  )
+
+  .post(
+    "/search",
+    authMiddleware,
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const { lonStart, latStart, lonEnd, latEnd } = req.body
+        const lisitings = await Listing.findAll({
+          include: { model: User, as: "owner" },
+        })
+
+        res.send(lisitings)
       } catch (error) {
         next(error)
       }
@@ -89,7 +107,9 @@ listingsRouter
     authMiddleware,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
-        const listing = await Listing.findByPk(req.params.id)
+        const listing = await Listing.findByPk(req.params.id, {
+          include: { model: User, as: "owner" },
+        })
         if (listing) {
           res.send(listing)
         } else {
