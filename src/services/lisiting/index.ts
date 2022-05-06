@@ -5,7 +5,7 @@ import { authMiddleware } from "../auth/AuthMiddleware"
 import { Listing } from "../../sql/ListingModel"
 import fetch from "node-fetch"
 import User from "../../sql/UserModel"
-import sequelize from "sequelize"
+import sequelize, { Op } from "sequelize"
 
 const listingsRouter = Router()
 
@@ -31,7 +31,51 @@ listingsRouter
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         const { lonStart, latStart, lonEnd, latEnd } = req.body
+
+        console.log(req.body)
+
+        const whereLatitude =
+          latStart >= latEnd
+            ? /* both edges on same side */
+              {
+                [Op.and]: {
+                  [Op.lt]: latStart,
+                  [Op.gte]: latEnd,
+                },
+              }
+            : /* edges on opposite sides */
+              {
+                [Op.or]: {
+                  [Op.gt]: latStart,
+                  [Op.lte]: latEnd,
+                },
+              }
+
+        const whereLongitude =
+          lonStart <= lonEnd
+            ? /* both edges on same side */
+              {
+                [Op.and]: {
+                  [Op.gt]: lonStart,
+                  [Op.lte]: lonEnd,
+                },
+              }
+            : /* edges on opposite sides */
+              {
+                [Op.and]: {
+                  [Op.gt]: lonStart,
+                  [Op.lte]: lonEnd,
+                },
+              }
+
         const lisitings = await Listing.findAll({
+          where: {
+            ownerId: {
+              [Op.not]: req.user!.id,
+            },
+            latitude: whereLatitude,
+            longitude: whereLongitude,
+          },
           include: { model: User, as: "owner" },
         })
 

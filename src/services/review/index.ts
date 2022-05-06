@@ -19,6 +19,7 @@ reviewsRouter
           where: {
             listingId: listingId,
           },
+          order: [["createdAt", "DESC"]],
           include: { model: User, as: "owner" },
         })
 
@@ -66,17 +67,17 @@ reviewsRouter
         const userId = req.user!.id
         const listingId = req.params.listingId
 
-        const review = await Review.create(
-          {
-            ...req.body,
-            ownerId: userId,
-            listingId: listingId,
-          },
-          { include: { model: User, as: "owner" } }
-        )
+        const review = await Review.create({
+          ...req.body,
+          ownerId: userId,
+          listingId: listingId,
+        })
 
         if (review) {
-          res.send(review)
+          const reviewWithUser = await Review.findByPk(review.id, {
+            include: { model: User, as: "owner" },
+          })
+          res.send(reviewWithUser)
         } else {
           next(createHttpError(500, "Review was not created!"))
         }

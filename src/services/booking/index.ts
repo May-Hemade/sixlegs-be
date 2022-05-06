@@ -40,15 +40,15 @@ bookingsRouter
       try {
         const listingId = req.params.listingId
 
-        const bookings = await Booking.findAll({
-          where: {
-            listingId: listingId,
-            ownerId: req.user!.id,
+        const listing = await Listing.findByPk(listingId, {
+          include: {
+            model: Booking,
+            as: "bookings",
+            include: [{ model: User, as: "owner" }],
           },
-          include: { model: User, as: "owner" },
         })
 
-        res.send(bookings)
+        res.send(listing)
       } catch (error) {
         next(error)
       }

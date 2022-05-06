@@ -33,6 +33,14 @@ export interface Pet {
   ownerId: number
 }
 
+export interface Product {
+  id: number
+  productName: string
+  shop?: string
+  website?: string
+  description?: string
+}
+
 export enum UserRole {
   User = "User",
   Admin = "Admin",

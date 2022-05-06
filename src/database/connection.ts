@@ -8,7 +8,7 @@ if (!POSTGRES_URI) {
 
 const sequelize = new Sequelize(POSTGRES_URI, {
   dialect: "postgres",
-  logging: false
+  logging: true,
 })
 
 export const authenticateDatabase = async () => {
@@ -18,7 +18,7 @@ export const authenticateDatabase = async () => {
      * alter:true -> if there is any change apply without dropping tables
      * force:true -> apply changes and drop tables
      */
-    await sequelize.sync({ alter: true})
+    await sequelize.sync({ alter: true })
     console.log("✅ Connection has been established successfully.")
   } catch (error) {
     console.log(error)
