@@ -1,4 +1,5 @@
 import { Booking } from "./BookingModel"
+import { ListingImage } from "./ListingImageModel"
 import { Listing } from "./ListingModel"
 import { Pet } from "./PetModel"
 import { Review } from "./ReviewModel"
@@ -57,3 +58,12 @@ Listing.hasMany(Booking, {
 })
 
 Booking.belongsTo(Listing, { targetKey: "id" })
+
+Listing.hasMany(ListingImage, {
+  onDelete: "CASCADE",
+  sourceKey: "id",
+  foreignKey: "listingId",
+  as: "images",
+})
+
+ListingImage.belongsTo(Listing, { targetKey: "id" })

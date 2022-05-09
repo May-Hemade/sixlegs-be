@@ -8,7 +8,7 @@ if (!POSTGRES_URI) {
 
 const sequelize = new Sequelize(POSTGRES_URI, {
   dialect: "postgres",
-  logging: true,
+  logging: false,
 })
 
 export const authenticateDatabase = async () => {

@@ -1,11 +1,12 @@
-import { Request, Response, NextFunction } from "express"
+import e, { Request, Response, NextFunction } from "express"
 import { Router } from "express"
 import createHttpError from "http-errors"
 import { authMiddleware } from "../auth/AuthMiddleware"
 import { Listing } from "../../sql/ListingModel"
-import fetch from "node-fetch"
 import User from "../../sql/UserModel"
-import sequelize, { Op } from "sequelize"
+import { Op } from "sequelize"
+import { parser } from "../utils/cloudinary"
+import { ListingImage } from "../../sql/ListingImageModel"
 
 const listingsRouter = Router()
 
@@ -15,6 +16,8 @@ listingsRouter
     authMiddleware,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
+        const listingId = req.query.id
+
         const listings = await Listing.findAll({
           include: { model: User, as: "owner" },
         })
@@ -76,7 +79,10 @@ listingsRouter
             latitude: whereLatitude,
             longitude: whereLongitude,
           },
-          include: { model: User, as: "owner" },
+          include: [
+            { model: User, as: "owner" },
+            { model: ListingImage, as: "images" },
+          ],
         })
 
         res.send(lisitings)
@@ -85,6 +91,7 @@ listingsRouter
       }
     }
   )
+
   .post(
     "/",
     authMiddleware,
@@ -101,6 +108,42 @@ listingsRouter
           res.send(lisiting)
         } else {
           next(createHttpError(500, "Lisiting was not created!"))
+        }
+      } catch (error) {
+        next(error)
+      }
+    }
+  )
+
+  .post(
+    "/:id/images",
+    authMiddleware,
+    parser.single("listingImage"),
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const loggedInUser = req.user!
+        const listingId = req.params.id
+
+        const listing = await Listing.findOne({
+          where: {
+            id: listingId,
+            ownerId: loggedInUser.id,
+          },
+        })
+        if (listing && req.file) {
+          const image = await ListingImage.create({
+            listingId: listing.id,
+            url: req.file.path,
+          })
+
+          if (image) {
+            await listing.reload()
+            res.send(listing)
+          } else {
+            next(createHttpError(400, "Could not upload image"))
+          }
+        } else {
+          next(createHttpError(404, "Listing not found"))
         }
       } catch (error) {
         next(error)
@@ -128,31 +171,16 @@ listingsRouter
     }
   )
 
-  // .get(
-  //   "/searchCity",
-  //   authMiddleware,
-  //   async (req: Request, res: Response, next: NextFunction) => {
-  //     try {
-  //       const searchCity = req.params.city
-  //       let response = await fetch(
-  //         `{https://geocode.maps.co/search?q=${searchCity}}`
-  //       )
-  //       const result = await response.json()
-
-  //       res.send(result)
-  //     } catch (error) {
-  //       next(error)
-  //     }
-  //   }
-  // )
-
   .get(
     "/:id",
     authMiddleware,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         const listing = await Listing.findByPk(req.params.id, {
-          include: { model: User, as: "owner" },
+          include: [
+            { model: User, as: "owner" },
+            { model: ListingImage, as: "images" },
+          ],
         })
         if (listing) {
           res.send(listing)
@@ -173,14 +201,15 @@ listingsRouter
         const loggedInUser = req.user
 
         if (loggedInUser) {
-          const lisiting = await Listing.findByPk(req.params.id)
-          if (loggedInUser.id === lisiting?.ownerId) {
+          const listing = await Listing.findByPk(req.params.id)
+          if (loggedInUser.id === listing?.ownerId) {
             const [success, updatedListing] = await Listing.update(req.body, {
-              where: { id: lisiting.id },
+              where: { id: listing.id },
               returning: true,
             })
             if (success) {
-              res.send(updatedListing)
+              await listing.reload()
+              res.send(listing)
             } else {
               next(createHttpError(400, "Failed to upload"))
             }
@@ -192,6 +221,31 @@ listingsRouter
         }
       } catch (error) {
         next(error)
+      }
+    }
+  )
+
+  .delete(
+    "/images/:id",
+    authMiddleware,
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const loggedInUser = req.user!
+        const listingId = req.params.id
+        const lisiting = await Listing.findOne({
+          where: {
+            id: listingId,
+            ownerId: loggedInUser.id,
+          },
+        })
+
+        if (lisiting && req.file) {
+          const image = await ListingImage.destroy({})
+        }
+
+        res.status(204).send()
+      } catch (error) {
+        res.status(500).send({ message: "Couldn't delete" })
       }
     }
   )

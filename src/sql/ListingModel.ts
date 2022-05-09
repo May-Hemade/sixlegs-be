@@ -9,6 +9,7 @@ import {
 } from "sequelize"
 
 import sequelize from "../database/connection"
+import { ListingImage } from "./ListingImageModel"
 import { User } from "./UserModel"
 
 export class Listing extends Model<
@@ -24,6 +25,7 @@ export class Listing extends Model<
   declare listingName: string
   declare pricePerNight: number
   declare owner?: NonAttribute<User>
+  declare images?: NonAttribute<ListingImage[]>
 
   declare createdAt: CreationOptional<Date>
   declare updatedAt: CreationOptional<Date>
@@ -64,6 +66,9 @@ Listing.init(
     updatedAt: DataTypes.DATE,
   },
   {
+    defaultScope: {
+      include: { model: ListingImage, as: "images" },
+    },
     tableName: "listings",
     sequelize,
   }
