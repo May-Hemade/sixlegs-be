@@ -225,29 +225,29 @@ listingsRouter
     }
   )
 
-  .delete(
-    "/images/:id",
-    authMiddleware,
-    async (req: Request, res: Response, next: NextFunction) => {
-      try {
-        const loggedInUser = req.user!
-        const listingId = req.params.id
-        const lisiting = await Listing.findOne({
-          where: {
-            id: listingId,
-            ownerId: loggedInUser.id,
-          },
-        })
+// .delete(
+//   "/images/:id",
+//   authMiddleware,
+//   async (req: Request, res: Response, next: NextFunction) => {
+//     try {
+//       const loggedInUser = req.user!
+//       const imageId = req.params.id
+//       const lisiting = await Listing.findOne({
+//         where: {
+//           id: imageId,
+//           ownerId: loggedInUser.id,
+//         },
+//       })
 
-        if (lisiting && req.file) {
-          const image = await ListingImage.destroy({})
-        }
+//       if (lisiting && req.file) {
+//         const image = await ListingImage.destroy({})
+//       }
 
-        res.status(204).send()
-      } catch (error) {
-        res.status(500).send({ message: "Couldn't delete" })
-      }
-    }
-  )
+//       res.status(204).send()
+//     } catch (error) {
+//       res.status(500).send({ message: "Couldn't delete" })
+//     }
+//   }
+// )
 
 export default listingsRouter
