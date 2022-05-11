@@ -225,29 +225,43 @@ listingsRouter
     }
   )
 
-// .delete(
-//   "/images/:id",
-//   authMiddleware,
-//   async (req: Request, res: Response, next: NextFunction) => {
-//     try {
-//       const loggedInUser = req.user!
-//       const imageId = req.params.id
-//       const lisiting = await Listing.findOne({
-//         where: {
-//           id: imageId,
-//           ownerId: loggedInUser.id,
-//         },
-//       })
+  .delete(
+    "/images/:id",
+    authMiddleware,
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const loggedInUser = req.user!
+        const imageId = req.params.id
 
-//       if (lisiting && req.file) {
-//         const image = await ListingImage.destroy({})
-//       }
-
-//       res.status(204).send()
-//     } catch (error) {
-//       res.status(500).send({ message: "Couldn't delete" })
-//     }
-//   }
-// )
+        const image = await ListingImage.findByPk(imageId)
+        if (image) {
+          const lisiting = await Listing.findOne({
+            where: {
+              ownerId: loggedInUser.id,
+              id: image?.listingId,
+            },
+          })
+          if (lisiting) {
+            const rows = await ListingImage.destroy({
+              where: {
+                id: imageId,
+              },
+            })
+            if (rows) {
+              res.status(204).send()
+            } else {
+              res.status(500).send({ message: "Couldn't delete image" })
+            }
+          } else {
+            res.status(404).send({ message: "Couldn't find image" })
+          }
+        } else {
+          res.status(404).send({ message: "Couldn't find image" })
+        }
+      } catch (error) {
+        res.status(500).send({ message: "Couldn't delete" })
+      }
+    }
+  )
 
 export default listingsRouter
