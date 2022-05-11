@@ -38,9 +38,14 @@ bookingsRouter
     authMiddleware,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
+        const loggedInUser = req.user!
         const listingId = req.params.listingId
 
-        const listing = await Listing.findByPk(listingId, {
+        const listing = await Listing.findOne({
+          where: {
+            ownerId: loggedInUser.id,
+            id: listingId,
+          },
           include: {
             model: Booking,
             as: "bookings",
@@ -49,6 +54,26 @@ bookingsRouter
         })
 
         res.send(listing)
+      } catch (error) {
+        next(error)
+      }
+    }
+  )
+
+  .get(
+    "/:listingId/alreadyBooked",
+    authMiddleware,
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const listingId = req.params.listingId
+
+        const bookings = await Booking.findAll({
+          where: {
+            listingId: listingId,
+          },
+        })
+
+        res.send(bookings)
       } catch (error) {
         next(error)
       }
