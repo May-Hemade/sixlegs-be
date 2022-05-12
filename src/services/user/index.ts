@@ -85,7 +85,7 @@ usersRouter
 
       if (user) {
         const accessToken = await authenticateUser(user)
-        res.send({ accessToken })
+        res.send({ accessToken, profile: user })
       } else {
         next(createHttpError(401, "Credentials not ok!"))
       }
